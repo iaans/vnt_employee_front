@@ -1,17 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FloatLabel from "../FloatLabel";
 import "./style.css";
-import { Button, DatePicker, Input, Select } from "antd";
-import {} from "antd";
+import { Alert, Button, DatePicker, Input, Select } from "antd";
 import "antd/dist/antd.css";
 import api from "../../services/api";
-//import { magenta } from "@ant-design/colors";
 
 const { Option } = Select;
-
-//import
-
-// const dateFormat = "YYYY-MM-DD";
 
 export default function EmployeeForm() {
   const [name, setName] = useState();
@@ -21,21 +15,66 @@ export default function EmployeeForm() {
   const [city, setCity] = useState();
   const [job, setJob] = useState();
   const [salary, setSalary] = useState();
+  const [ufs, setUfs] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    getUfs();
+  }, []);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setSuccess(false);
+    }, 6000);
+  }, [success]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setError(false);
+    }, 6000);
+  }, [error]);
+
+  async function getUfs() {
+    // fazer chamada para a rota de busca dos ufs
+    // com o resultado do back, preencha os ufs com setUfs
+
+    const response = await api.get("/list-ufs");
+    setUfs(response.data);
+
+    console.log(ufs);
+  }
+
+  async function getCities(uf) {
+    const response = await api.get(`get-cities-by-state/${uf}`);
+
+    setCities(response.data[0].cities);
+  }
 
   async function submitEmployee(e) {
     e.preventDefault();
-    await api.post("/submit-employee", {
-      name,
-      birthDate: date,
-      gender: genre,
-      state,
-      city,
-      role: job,
-      salary,
-    });
-  }
 
-  console.log("Genre", genre);
+    setSuccess(false);
+    setError(false);
+
+    try {
+      await api.post("/submit-employee", {
+        name,
+        birthDate: date,
+        gender: genre,
+        state,
+        city,
+        role: job,
+        salary,
+      });
+
+      setSuccess(true);
+    } catch (error) {
+      console.log("Error => ", error);
+      setError(true);
+    }
+  }
 
   // HANDLE CHANGE - init
   function handleGenreChange(value) {
@@ -45,6 +84,7 @@ export default function EmployeeForm() {
   function handleStateChange(value) {
     console.log(`selected ${value}`);
     setState(value);
+    getCities(value);
   }
 
   function handleCityChange(value) {
@@ -56,18 +96,10 @@ export default function EmployeeForm() {
     console.log(`selected ${dateString}`);
     setDate(dateString);
   }
-  // HANDLE CHANGE - end
-
-  //   element.style {
-  //     display: flex;
-  //     flex-wrap: wrap;
-  //     align-content: space-between;
-  // }
-
   return (
     <div className="container">
       <header className="App-header">
-        <h1>Cadastro de funcionário </h1>
+        <h1>Employee Registration </h1>
         <form>
           <div>
             <FloatLabel label="Name" name="name">
@@ -110,9 +142,8 @@ export default function EmployeeForm() {
                 style={{ width: "100%" }}
                 onChange={handleStateChange}
               >
-                <Option value="PR">PR</Option>
-                <Option value="SP">SP</Option>
-                <Option valuce="SC">SC</Option>
+                {ufs &&
+                  ufs.map((each) => <Option value={each.uf}>{each.uf}</Option>)}
               </Select>
             </FloatLabel>
           </div>
@@ -124,17 +155,13 @@ export default function EmployeeForm() {
                 style={{ width: "100%" }}
                 onChange={handleCityChange}
               >
-                <Option value="Pinhais">Pinhais</Option>
-                <Option value="Curitiba">Curitiba</Option>
-                <Option value="Campinas">Campinas</Option>
-                <Option value="Valinhos">Valinhos</Option>
-                <Option value="Joinville">Joinville</Option>
-                <Option value="Florianópolis">Florianópolis</Option>
+                {cities &&
+                  cities.map((each) => <Option value={each}>{each}</Option>)}
               </Select>
             </FloatLabel>
           </div>
           <div>
-            <FloatLabel label="Job" name="job">
+            <FloatLabel label="Role" name="job">
               <Input
                 value={job}
                 onChange={(event) => setJob(event.target.value)}
@@ -154,11 +181,34 @@ export default function EmployeeForm() {
           <Button
             type="submit"
             onClick={(e) => submitEmployee(e)}
-            style={{ background: "#ED1B66" }}
+            style={{ background: "#ED1B66", color: "#FFF" }}
           >
             Send
           </Button>
         </div>
+
+        {success ? (
+          <Alert
+            style={{ marginTop: "12px" }}
+            message="Success"
+            description="Registration success!"
+            type="success"
+            showIcon
+          />
+        ) : (
+          ""
+        )}
+        {error ? (
+          <Alert
+            style={{ marginTop: "12px" }}
+            message="Error"
+            description="An error occured on the registration, please try again!."
+            type="error"
+            showIcon
+          />
+        ) : (
+          ""
+        )}
       </header>
     </div>
   );
