@@ -1,8 +1,33 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+
+import api from "../../services/api";
 import "antd/dist/antd.css";
-import { Table, Tag, Space } from "antd";
+import { Table, Space } from "antd";
 
 export default function EmployeeList() {
+  const [employees, setEmployees] = useState([]);
+
+  useEffect(() => {
+    getEmployees();
+  }, []);
+
+  async function getEmployees() {
+    const response = await api.get("/list-employees");
+    setEmployees(response.data);
+    console.log(employees);
+  }
+
+  function deleteEmployee(row) {
+    // const response = await api.delete(`/delete-employee/${row._id}`);
+
+    api
+      .delete(`/delete-employee/${row._id}`)
+      .then(async () => {
+        await getEmployees();
+      })
+      .catch((error) => console.log(error));
+  }
+
   const columns = [
     {
       title: "Name",
@@ -11,74 +36,58 @@ export default function EmployeeList() {
       render: (text) => <a>{text}</a>,
     },
     {
-      title: "Age",
-      dataIndex: "age",
-      key: "age",
+      title: "Birth Date",
+      dataIndex: "birthDate",
+      key: "birthDate",
+      render: (date) => {
+        return new Date(date).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        }); // 08/19/2020 (month and day with two digits);
+      },
     },
     {
-      title: "Address",
-      dataIndex: "address",
-      key: "address",
+      title: "Gender",
+      dataIndex: "gender",
+      key: "gender",
     },
     {
-      title: "Tags",
-      key: "tags",
-      dataIndex: "tags",
-      render: (tags) => (
-        <>
-          {tags.map((tag) => {
-            let color = tag.length > 5 ? "geekblue" : "green";
-            if (tag === "loser") {
-              color = "volcano";
-            }
-            return (
-              <Tag color={color} key={tag}>
-                {tag.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
-      ),
+      title: "State",
+      dataIndex: "state",
+      key: "state",
     },
+    {
+      title: "City",
+      dataIndex: "city",
+      key: "city",
+    },
+    {
+      title: "Role",
+      dataIndex: "role",
+      key: "role",
+    },
+    {
+      title: "Salary",
+      dataIndex: "salary",
+      key: "salary",
+    },
+
     {
       title: "Action",
       key: "action",
-      render: (text, edit) => (
+      render: (row) => (
         <Space size="middle">
-          <a>Edit {edit.name}</a>
-          <a>Delete</a>
+          <a>Edit</a>
+          <a onClick={() => deleteEmployee(row)}>Delete</a>
         </Space>
       ),
     },
   ];
 
-  const data = [
-    {
-      key: "1",
-      name: "John Brown",
-      age: 32,
-      address: "New York No. 1 Lake Park",
-      tags: ["nice", "developer"],
-    },
-    {
-      key: "2",
-      name: "Jim Green",
-      age: 42,
-      address: "London No. 1 Lake Park",
-      tags: ["loser"],
-    },
-    {
-      key: "3",
-      name: "Joe Black",
-      age: 32,
-      address: "Sidney No. 1 Lake Park",
-      tags: ["cool", "teacher"],
-    },
-  ];
-
   return (
     <div>
-      <Table columns={columns} dataSource={data} />
+      <Table columns={columns} dataSource={employees} />
     </div>
   );
 }
