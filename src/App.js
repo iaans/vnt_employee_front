@@ -1,12 +1,8 @@
 import React from "react";
-import EmployeeForm from "./components/EmployeeForm";
+import Routes from "./routes";
 
 function App() {
-  return (
-    <div className="App">
-      <EmployeeForm />
-    </div>
-  );
+  return <Routes />;
 }
 
 export default App;
