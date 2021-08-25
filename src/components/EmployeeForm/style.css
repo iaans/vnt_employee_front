@@ -3,15 +3,37 @@
   align-items: center;
   justify-content: center;
 }
-
-Button {
-  height: 20px;
-  width: 100px;
-  margin: 20px 50px;
-  position: relative;
-  left: 35%;
+.container h1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 body {
   background-color: #fff8f8;
+}
+.container .content form input {
+  margin-top: 8px;
+}
+
+.container .content form .input-group {
+  display: flex;
+}
+
+.container .content form .input-group input + input {
+  margin-left: 8px;
+}
+
+.container .content form .select-group {
+  display: flex;
+  justify-content: space-between;
+}
+
+.container .content form .select-group select + select {
+  margin-left: 8px;
+}
+
+.spaced-items {
+  display: flex;
+  justify-content: space-between;
 }

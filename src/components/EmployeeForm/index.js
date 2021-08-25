@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import FloatLabel from "../FloatLabel";
 import "./style.css";
-import { Alert, Button, DatePicker, Input, Select } from "antd";
+import { Alert, Select } from "antd";
 import "antd/dist/antd.css";
 import api from "../../services/api";
 
@@ -99,92 +99,79 @@ export default function EmployeeForm() {
   return (
     <div className="container">
       <header className="App-header">
-        <h1>Employee Registration </h1>
+        <h1>Employee Registration</h1>
         <form>
-          <div>
-            <FloatLabel label="Name" name="name">
-              <Input
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-              />
-            </FloatLabel>
+          <input
+            placeholder="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <div className="spaced-items">
+            <input
+              type="date"
+              style={{ width: "100%" }}
+              onChange={(date, dateString) =>
+                handleDateChange(date, dateString)
+              }
+            />
+
+            <select
+              value={genre}
+              // showSearch
+              style={{ width: "100%" }}
+              onChange={handleGenreChange} // <<<
+            >
+              <option>Select a Gender</option>
+              <option value="M">Masc</option>
+              <option value="F">Fem</option>
+            </select>
           </div>
+          <select
+            value={state}
+            showSearch
+            style={{ width: "100%" }}
+            onChange={handleStateChange}
+          >
+            <option>Select a UF</option>
+            {ufs &&
+              ufs.map((each) => <option value={each.uf}>{each.uf}</option>)}
+          </select>
+
+          <select
+            value={city}
+            showSearch
+            style={{ width: "100%" }}
+            onChange={handleCityChange}
+          >
+            <option>Select a City</option>
+
+            {cities &&
+              cities.map((each) => <Option value={each}>{each}</Option>)}
+          </select>
 
           <div>
-            <FloatLabel name="date">
-              <DatePicker
-                style={{ width: "100%" }}
-                onChange={(date, dateString) =>
-                  handleDateChange(date, dateString)
-                }
-              />
-            </FloatLabel>
+            <input
+              placeholder="Role"
+              value={job}
+              onChange={(event) => setJob(event.target.value)}
+            />
           </div>
           <div>
-            <FloatLabel label="Genre" name="gerne">
-              <Select
-                value={genre}
-                showSearch
-                style={{ width: "100%" }}
-                onChange={handleGenreChange} // <<<
-              >
-                <Option value="M">Masc</Option>
-                <Option value="F">Fem</Option>
-              </Select>
-            </FloatLabel>
-          </div>
-
-          <div>
-            <FloatLabel label="State" name="state">
-              <Select
-                value={state}
-                showSearch
-                style={{ width: "100%" }}
-                onChange={handleStateChange}
-              >
-                {ufs &&
-                  ufs.map((each) => <Option value={each.uf}>{each.uf}</Option>)}
-              </Select>
-            </FloatLabel>
-          </div>
-          <div>
-            <FloatLabel label="City" name="city">
-              <Select
-                value={city}
-                showSearch
-                style={{ width: "100%" }}
-                onChange={handleCityChange}
-              >
-                {cities &&
-                  cities.map((each) => <Option value={each}>{each}</Option>)}
-              </Select>
-            </FloatLabel>
-          </div>
-          <div>
-            <FloatLabel label="Role" name="job">
-              <Input
-                value={job}
-                onChange={(event) => setJob(event.target.value)}
-              />
-            </FloatLabel>
-          </div>
-          <div>
-            <FloatLabel label="Salary" name="salary">
-              <Input
-                value={salary}
-                onChange={(event) => setSalary(event.target.value)}
-              />
-            </FloatLabel>
+            <input
+              placeholder="Salary"
+              value={salary}
+              onChange={(event) => setSalary(event.target.value)}
+            />
           </div>
         </form>
         <div>
-          <Button
+          <button
+            className="button"
             type="submit"
             onClick={(e) => submitEmployee(e)}
-            style={{ background: "#ED1B66", color: "#FFF" }}
           >
             Send
-          </Button>
+          </button>
         </div>
 
         {success ? (
