@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
-import FloatLabel from "../FloatLabel";
-import "./style.css";
-import { Alert, Select } from "antd";
-import "antd/dist/antd.css";
-import api from "../../services/api";
+import React, { useState, useEffect } from 'react';
+import './style.css';
+import { Alert, Select } from 'antd';
+import 'antd/dist/antd.css';
+import api from '../../services/api';
 
 const { Option } = Select;
 
@@ -40,7 +39,7 @@ export default function EmployeeForm() {
     // fazer chamada para a rota de busca dos ufs
     // com o resultado do back, preencha os ufs com setUfs
 
-    const response = await api.get("/list-ufs");
+    const response = await api.get('/list-ufs');
     setUfs(response.data);
 
     console.log(ufs);
@@ -59,7 +58,7 @@ export default function EmployeeForm() {
     setError(false);
 
     try {
-      await api.post("/submit-employee", {
+      await api.post('/submit-employee', {
         name,
         birthDate: date,
         gender: genre,
@@ -71,7 +70,7 @@ export default function EmployeeForm() {
 
       setSuccess(true);
     } catch (error) {
-      console.log("Error => ", error);
+      console.log('Error => ', error);
       setError(true);
     }
   }
@@ -109,7 +108,7 @@ export default function EmployeeForm() {
           <div className="spaced-items">
             <input
               type="date"
-              style={{ width: "100%" }}
+              style={{ marginRight: '4px' }}
               onChange={(date, dateString) =>
                 handleDateChange(date, dateString)
               }
@@ -118,7 +117,7 @@ export default function EmployeeForm() {
             <select
               value={genre}
               // showSearch
-              style={{ width: "100%" }}
+              // style={{ width: "100%" }}
               onChange={handleGenreChange} // <<<
             >
               <option>Select a Gender</option>
@@ -129,7 +128,7 @@ export default function EmployeeForm() {
           <select
             value={state}
             showSearch
-            style={{ width: "100%" }}
+            style={{ width: '100%' }}
             onChange={handleStateChange}
           >
             <option>Select a UF</option>
@@ -140,7 +139,7 @@ export default function EmployeeForm() {
           <select
             value={city}
             showSearch
-            style={{ width: "100%" }}
+            style={{ width: '100%' }}
             onChange={handleCityChange}
           >
             <option>Select a City</option>
@@ -176,25 +175,25 @@ export default function EmployeeForm() {
 
         {success ? (
           <Alert
-            style={{ marginTop: "12px" }}
+            style={{ marginTop: '12px' }}
             message="Success"
             description="Registration success!"
             type="success"
             showIcon
           />
         ) : (
-          ""
+          ''
         )}
         {error ? (
           <Alert
-            style={{ marginTop: "12px" }}
+            style={{ marginTop: '12px' }}
             message="Error"
             description="An error occured on the registration, please try again!."
             type="error"
             showIcon
           />
         ) : (
-          ""
+          ''
         )}
       </header>
     </div>
