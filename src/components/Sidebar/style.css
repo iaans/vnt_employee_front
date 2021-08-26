@@ -1,0 +1,40 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
+
+.side-bar {
+  background-color: #ed1b66;
+  height: 100%;
+}
+
+.side-bar h1 {
+  color: #fff;
+  margin: 4px;
+  padding: 4px;
+}
+
+.side-bar a {
+  color: #fff;
+  margin: 4px;
+  padding: 4px;
+  font: 400 14px Roboto, sans-serif;
+}
+
+.side-bar a:hover {
+  color: rgb(59, 149, 161);
+}
+
+.side-bar a img {
+  width: 80px;
+  height: 80px;
+}
+
+.side-bar div {
+  margin: 10px;
+  color: #fff;
+  padding-bottom: 4px;
+  margin-left: 25px;
+}
+
+.side-bar div:hover {
+  transition: 0.15ms;
+  color: rgba(255, 255, 255, 0.7);
+}
