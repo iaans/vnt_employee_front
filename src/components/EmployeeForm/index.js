@@ -80,10 +80,10 @@ export default function EmployeeForm() {
     console.log(`selected ${value}`);
     setGenre(value);
   }
-  function handleStateChange(value) {
+  async function handleStateChange(value) {
     console.log(`selected ${value}`);
     setState(value);
-    getCities(value);
+    await getCities(value);
   }
 
   function handleCityChange(value) {
@@ -91,9 +91,9 @@ export default function EmployeeForm() {
     setCity(value);
   }
 
-  function handleDateChange(date, dateString) {
-    console.log(`selected ${dateString}`);
-    setDate(dateString);
+  function handleDateChange(dateStringValue) {
+    console.log(`selected ${dateStringValue}`);
+    setDate(dateStringValue);
   }
   return (
     <div className="container">
@@ -109,16 +109,12 @@ export default function EmployeeForm() {
             <input
               type="date"
               style={{ marginRight: "4px" }}
-              onChange={(date, dateString) =>
-                handleDateChange(date, dateString)
-              }
+              onChange={(e) => handleDateChange(e.target.value)}
             />
 
             <select
               value={genre}
-              // showSearch
-              // style={{ width: "100%" }}
-              onChange={handleGenreChange} // <<<
+              onChange={(e) => handleGenreChange(e.target.value)}
             >
               <option value="" disabled selected>
                 Select your gender
@@ -131,7 +127,7 @@ export default function EmployeeForm() {
             value={state}
             showSearch
             style={{ width: "100%" }}
-            onChange={handleStateChange}
+            onChange={(e) => handleStateChange(e.target.value)}
           >
             <option value="" disabled selected>
               Select your UF
@@ -144,13 +140,13 @@ export default function EmployeeForm() {
             value={city}
             showSearch
             style={{ width: "100%" }}
-            onChange={handleCityChange}
+            onChange={(e) => handleCityChange(e.target.value)}
           >
             <option value="" disabled selected>
               Select your City
             </option>
             {cities &&
-              cities.map((each) => <Option value={each}>{each}</Option>)}
+              cities.map((each) => <option value={each}>{each}</option>)}
           </select>
 
           <div>
