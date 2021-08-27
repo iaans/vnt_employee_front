@@ -120,6 +120,9 @@ export default function EmployeeForm() {
               // style={{ width: "100%" }}
               onChange={handleGenreChange} // <<<
             >
+              <option value="" disabled selected>
+                Select your gender
+              </option>
               <option value="M">Masc</option>
               <option value="F">Fem</option>
             </select>
@@ -130,6 +133,9 @@ export default function EmployeeForm() {
             style={{ width: "100%" }}
             onChange={handleStateChange}
           >
+            <option value="" disabled selected>
+              Select your UF
+            </option>
             {ufs &&
               ufs.map((each) => <option value={each.uf}>{each.uf}</option>)}
           </select>
@@ -140,6 +146,9 @@ export default function EmployeeForm() {
             style={{ width: "100%" }}
             onChange={handleCityChange}
           >
+            <option value="" disabled selected>
+              Select your City
+            </option>
             {cities &&
               cities.map((each) => <Option value={each}>{each}</Option>)}
           </select>
