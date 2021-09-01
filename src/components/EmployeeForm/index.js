@@ -1,33 +1,36 @@
 import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
 import "./style.css";
-import { Alert, Select } from "antd";
+
+import { Alert } from "antd";
 import "antd/dist/antd.css";
+
 import api from "../../services/api";
 
-const { Option } = Select;
+import { createEmployee } from "../../store/actions/employee";
 
-export default function EmployeeForm() {
+function EmployeeForm({ createEmployee, success }) {
   const [name, setName] = useState();
-  const [date, setDate] = useState();
-  const [genre, setGenre] = useState();
+  const [birthDate, setDate] = useState();
+  const [gender, setGenre] = useState();
   const [state, setState] = useState();
   const [city, setCity] = useState();
-  const [job, setJob] = useState();
+  const [role, setJob] = useState();
   const [salary, setSalary] = useState();
   const [ufs, setUfs] = useState([]);
   const [cities, setCities] = useState([]);
-  const [success, setSuccess] = useState(false);
+  // const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
 
   useEffect(() => {
     getUfs();
   }, []);
 
-  useEffect(() => {
-    setTimeout(() => {
-      setSuccess(false);
-    }, 6000);
-  }, [success]);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     setSuccess(false);
+  //   }, 6000);
+  // }, [success]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -53,27 +56,40 @@ export default function EmployeeForm() {
 
   async function submitEmployee(e) {
     e.preventDefault();
-
-    setSuccess(false);
-    setError(false);
-
-    try {
-      await api.post("/submit-employee", {
-        name,
-        birthDate: date,
-        gender: genre,
-        state,
-        city,
-        role: job,
-        salary,
-      });
-
-      setSuccess(true);
-    } catch (error) {
-      console.log("Error => ", error);
-      setError(true);
-    }
+    await createEmployee({
+      name,
+      birthDate,
+      gender,
+      state,
+      city,
+      role,
+      salary,
+    });
   }
+
+  // async function submitEmployee(e) {
+  //   e.preventDefault();
+
+  //   setSuccess(false);
+  //   setError(false);
+
+  //   try {
+  //     await api.post("/submit-employee", {
+  //       name,
+  //       birthDate: date,
+  //       gender: gender,
+  //       state,
+  //       city,
+  //       role: role,
+  //       salary,
+  //     });
+
+  //     setSuccess(true);
+  //   } catch (error) {
+  //     console.log("Error => ", error);
+  //     setError(true);
+  //   }
+  // }
 
   // HANDLE CHANGE - init
   function handleGenreChange(value) {
@@ -113,7 +129,7 @@ export default function EmployeeForm() {
             />
 
             <select
-              value={genre}
+              value={gender}
               onChange={(e) => handleGenreChange(e.target.value)}
             >
               <option value="" disabled selected>
@@ -152,7 +168,7 @@ export default function EmployeeForm() {
           <div>
             <input
               placeholder="Role"
-              value={job}
+              value={role}
               onChange={(event) => setJob(event.target.value)}
             />
           </div>
@@ -200,3 +216,20 @@ export default function EmployeeForm() {
     </div>
   );
 }
+
+const mapStateToProperties = (state) => {
+  const { success } = state.employee;
+  return { success };
+};
+
+const mapDispatchToProperties = (dispatch) => ({
+  createEmployee: ({ name, birthDate, gender, state, city, role, salary }) =>
+    dispatch(
+      createEmployee({ name, birthDate, gender, state, city, role, salary })
+    ),
+});
+
+export default connect(
+  mapStateToProperties,
+  mapDispatchToProperties
+)(EmployeeForm);

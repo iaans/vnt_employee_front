@@ -1,32 +1,38 @@
 import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
 
-import api from "../../services/api";
 import "antd/dist/antd.css";
 import { Table, Space } from "antd";
 
-export default function EmployeeList() {
-  const [employees, setEmployees] = useState([]);
+import api from "../../services/api";
+
+import { deleteEmployee, listEmployees } from "../../store/actions/employee";
+
+function EmployeeList({ listEmployees, employees, deleteEmployee }) {
+  // const [employees, setEmployees] = useState([]);
 
   useEffect(() => {
-    getEmployees();
+    // getEmployees();
+    listEmployees();
   }, []);
 
-  async function getEmployees() {
-    const response = await api.get("/list-employees");
-    setEmployees(response.data);
-    console.log(employees);
-  }
+  // async function getEmployees() {
+  //   const response = await api.get("/list-employees");
+  //   setEmployees(response.data);
+  //   console.log(employees);
+  // }
 
-  function deleteEmployee(row) {
-    // const response = await api.delete(`/delete-employee/${row._id}`);
+  // function deleteEmployee(row) {
+  //   // const response = await api.delete(`/delete-employee/${row._id}`);
 
-    api
-      .delete(`/delete-employee/${row._id}`)
-      .then(async () => {
-        await getEmployees();
-      })
-      .catch((error) => console.log(error));
-  }
+  //   api
+  //     .delete(`/delete-employee/${row._id}`)
+  //     .then(async () => {
+  //       // await getEmployees();
+  //       listEmployees();
+  //     })
+  //     .catch((error) => console.log(error));
+  // }
 
   const columns = [
     {
@@ -79,7 +85,7 @@ export default function EmployeeList() {
       render: (row) => (
         <Space size="middle">
           <a>Edit</a>
-          <a onClick={() => deleteEmployee(row)}>Delete</a>
+          <a onClick={() => deleteEmployee(row._id)}>Delete</a>
         </Space>
       ),
     },
@@ -91,3 +97,19 @@ export default function EmployeeList() {
     </div>
   );
 }
+
+const mapStateToProperties = (state) => {
+  const { employees } = state.employee;
+
+  return { employees };
+};
+
+const mapDispatchToProperties = (dispatch) => ({
+  listEmployees: () => dispatch(listEmployees()),
+  deleteEmployee: (id) => dispatch(deleteEmployee(id)),
+});
+
+export default connect(
+  mapStateToProperties,
+  mapDispatchToProperties
+)(EmployeeList);
