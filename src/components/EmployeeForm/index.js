@@ -5,11 +5,18 @@ import "./style.css";
 import { Alert } from "antd";
 import "antd/dist/antd.css";
 
-import api from "../../services/api";
+import { createEmployee } from "../../store/actions/employee.js";
+import { getCities, getUfs } from "../../store/actions/location.js";
 
-import { createEmployee } from "../../store/actions/employee";
-
-function EmployeeForm({ createEmployee, success }) {
+function EmployeeForm({
+  createEmployee,
+  getCities,
+  getUfs,
+  success,
+  cities,
+  ufs,
+}) {
+  console.log("CITY >>>>>>>", cities);
   const [name, setName] = useState();
   const [birthDate, setDate] = useState();
   const [gender, setGenre] = useState();
@@ -17,8 +24,6 @@ function EmployeeForm({ createEmployee, success }) {
   const [city, setCity] = useState();
   const [role, setJob] = useState();
   const [salary, setSalary] = useState();
-  const [ufs, setUfs] = useState([]);
-  const [cities, setCities] = useState([]);
   // const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
 
@@ -38,22 +43,6 @@ function EmployeeForm({ createEmployee, success }) {
     }, 6000);
   }, [error]);
 
-  async function getUfs() {
-    // fazer chamada para a rota de busca dos ufs
-    // com o resultado do back, preencha os ufs com setUfs
-
-    const response = await api.get("/list-ufs");
-    setUfs(response.data);
-
-    console.log(ufs);
-  }
-
-  async function getCities(uf) {
-    const response = await api.get(`get-cities-by-state/${uf}`);
-
-    setCities(response.data[0].cities);
-  }
-
   async function submitEmployee(e) {
     e.preventDefault();
     await createEmployee({
@@ -66,30 +55,6 @@ function EmployeeForm({ createEmployee, success }) {
       salary,
     });
   }
-
-  // async function submitEmployee(e) {
-  //   e.preventDefault();
-
-  //   setSuccess(false);
-  //   setError(false);
-
-  //   try {
-  //     await api.post("/submit-employee", {
-  //       name,
-  //       birthDate: date,
-  //       gender: gender,
-  //       state,
-  //       city,
-  //       role: role,
-  //       salary,
-  //     });
-
-  //     setSuccess(true);
-  //   } catch (error) {
-  //     console.log("Error => ", error);
-  //     setError(true);
-  //   }
-  // }
 
   // HANDLE CHANGE - init
   function handleGenreChange(value) {
@@ -219,7 +184,8 @@ function EmployeeForm({ createEmployee, success }) {
 
 const mapStateToProperties = (state) => {
   const { success } = state.employee;
-  return { success };
+  const { cities, ufs } = state.location;
+  return { success, cities, ufs };
 };
 
 const mapDispatchToProperties = (dispatch) => ({
@@ -227,6 +193,12 @@ const mapDispatchToProperties = (dispatch) => ({
     dispatch(
       createEmployee({ name, birthDate, gender, state, city, role, salary })
     ),
+  getCities: (uf) => {
+    dispatch(getCities(uf));
+  },
+  getUfs: () => {
+    dispatch(getUfs());
+  },
 });
 
 export default connect(

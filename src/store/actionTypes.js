@@ -1,3 +1,8 @@
+//form
 export const SET_EMPLOYEES = "SET_EMPLOYEES";
 export const DELETE_EMPLOYEES_SUCCESS = "DELETE_EMPLOYEE_SUCCESS";
 export const SUBMIT_EMPLOYEE_SUCCESS = "SUBMIT_EMPLOYEE_SUCCSESS";
+
+//location
+export const SET_UFS = "SET_UFS";
+export const SET_CITIES = "SET_CITIES";
