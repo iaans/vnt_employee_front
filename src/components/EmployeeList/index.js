@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 
 import "antd/dist/antd.css";
@@ -6,33 +7,26 @@ import { Table, Space } from "antd";
 
 import api from "../../services/api";
 
-import { deleteEmployee, listEmployees } from "../../store/actions/employee";
+import {
+  deleteEmployee,
+  listEmployees,
+  setUpdatingEmployee,
+} from "../../store/actions/employee";
 
-function EmployeeList({ listEmployees, employees, deleteEmployee }) {
+function EmployeeList({
+  listEmployees,
+  employees,
+  deleteEmployee,
+  setUpdatingEmployee,
+}) {
   // const [employees, setEmployees] = useState([]);
+
+  const history = useHistory();
 
   useEffect(() => {
     // getEmployees();
     listEmployees();
   }, []);
-
-  // async function getEmployees() {
-  //   const response = await api.get("/list-employees");
-  //   setEmployees(response.data);
-  //   console.log(employees);
-  // }
-
-  // function deleteEmployee(row) {
-  //   // const response = await api.delete(`/delete-employee/${row._id}`);
-
-  //   api
-  //     .delete(`/delete-employee/${row._id}`)
-  //     .then(async () => {
-  //       // await getEmployees();
-  //       listEmployees();
-  //     })
-  //     .catch((error) => console.log(error));
-  // }
 
   const columns = [
     {
@@ -84,7 +78,14 @@ function EmployeeList({ listEmployees, employees, deleteEmployee }) {
       key: "action",
       render: (row) => (
         <Space size="middle">
-          <a>Edit</a>
+          <a
+            onClick={() => {
+              setUpdatingEmployee(row);
+              history.push("/");
+            }}
+          >
+            Edit
+          </a>
           <a onClick={() => deleteEmployee(row._id)}>Delete</a>
         </Space>
       ),
@@ -106,6 +107,28 @@ const mapStateToProperties = (state) => {
 
 const mapDispatchToProperties = (dispatch) => ({
   listEmployees: () => dispatch(listEmployees()),
+  setUpdatingEmployee: ({
+    _id,
+    name,
+    birthDate,
+    gender,
+    state,
+    city,
+    role,
+    salary,
+  }) =>
+    dispatch(
+      setUpdatingEmployee({
+        _id,
+        name,
+        birthDate,
+        gender,
+        state,
+        city,
+        role,
+        salary,
+      })
+    ),
   deleteEmployee: (id) => dispatch(deleteEmployee(id)),
 });
 

@@ -15,11 +15,11 @@ function EmployeeForm({
   success,
   cities,
   ufs,
+  updatingEmployee,
 }) {
-  console.log("CITY >>>>>>>", cities);
   const [name, setName] = useState();
   const [birthDate, setDate] = useState();
-  const [gender, setGenre] = useState();
+  const [gender, setGender] = useState();
   const [state, setState] = useState();
   const [city, setCity] = useState();
   const [role, setJob] = useState();
@@ -30,6 +30,33 @@ function EmployeeForm({
   useEffect(() => {
     getUfs();
   }, []);
+
+  // useEffect(() => {
+  //   updatingEmployee.uf && getCities(updatingEmployee.uf);
+  // }, [updatingEmployee.uf]);
+
+  useEffect(() => {
+    async function fetchCities(uf) {
+      // You can await here
+      await getCities(uf);
+    }
+
+    if (updatingEmployee._id) {
+      console.log("aquia aqueiaiq", updatingEmployee);
+      setState(updatingEmployee.state);
+
+      fetchCities(updatingEmployee.state);
+
+      setName(updatingEmployee.name);
+      const myDate = new Date(updatingEmployee.birthDate).toLocaleDateString();
+      console.log("my date ====>", myDate);
+      setDate(myDate);
+      setGender(updatingEmployee.gender);
+      setJob(updatingEmployee.role);
+      setSalary(updatingEmployee.salary);
+      setCity(updatingEmployee.city);
+    }
+  }, [updatingEmployee]);
 
   // useEffect(() => {
   //   setTimeout(() => {
@@ -59,7 +86,7 @@ function EmployeeForm({
   // HANDLE CHANGE - init
   function handleGenreChange(value) {
     console.log(`selected ${value}`);
-    setGenre(value);
+    setGender(value);
   }
   async function handleStateChange(value) {
     console.log(`selected ${value}`);
@@ -73,7 +100,7 @@ function EmployeeForm({
   }
 
   function handleDateChange(dateStringValue) {
-    console.log(`selected ${dateStringValue}`);
+    console.log(`selected DATE =>> ${dateStringValue}`);
     setDate(dateStringValue);
   }
   return (
@@ -183,9 +210,9 @@ function EmployeeForm({
 }
 
 const mapStateToProperties = (state) => {
-  const { success } = state.employee;
+  const { success, updatingEmployee } = state.employee;
   const { cities, ufs } = state.location;
-  return { success, cities, ufs };
+  return { success, updatingEmployee, cities, ufs };
 };
 
 const mapDispatchToProperties = (dispatch) => ({

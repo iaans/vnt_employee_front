@@ -1,8 +1,22 @@
 import { updateObject } from "../../helpers/mix";
-import { SET_EMPLOYEES, SUBMIT_EMPLOYEE_SUCCESS } from "../actionTypes";
+import {
+  SET_EMPLOYEES,
+  SUBMIT_EMPLOYEE_SUCCESS,
+  SET_UPDATING_EMPLOYEE,
+} from "../actionTypes";
 
 const initialState = {
   employees: [],
+  updatingEmployee: {
+    _id: null,
+    name: "",
+    birthDate: null,
+    gender: "",
+    state: "",
+    city: "",
+    role: "",
+    salary: 0,
+  },
   success: false,
 };
 
@@ -15,6 +29,10 @@ const employeeReducer = (state = initialState, action = {}) => {
       return updateObject(state, { employees: action.employees });
     case SUBMIT_EMPLOYEE_SUCCESS:
       return updateObject(state, { success: true });
+    case SET_UPDATING_EMPLOYEE:
+      console.log(action.updatingEmployee);
+
+      return updateObject(state, { updatingEmployee: action.updatingEmployee });
     default:
       return state;
   }

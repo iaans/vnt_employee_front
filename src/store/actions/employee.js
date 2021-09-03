@@ -1,10 +1,18 @@
 import api from "../../services/api";
 
-import { SET_EMPLOYEES, SUBMIT_EMPLOYEE_SUCCESS } from "../actionTypes";
+import {
+  SET_EMPLOYEES,
+  SUBMIT_EMPLOYEE_SUCCESS,
+  SET_UPDATING_EMPLOYEE,
+} from "../actionTypes";
 import { makeActionCreator } from "../../helpers/mix";
 
 const setEmployees = makeActionCreator(SET_EMPLOYEES, "employees");
 const createEmployeeSuccsess = makeActionCreator(SUBMIT_EMPLOYEE_SUCCESS);
+export const setUpdatingEmployee = makeActionCreator(
+  SET_UPDATING_EMPLOYEE,
+  "updatingEmployee"
+);
 
 // actions sao utilizadas para chamadas de APIs ou chamadas para atualizacao do estado, por ex as do makeActionCreator acima
 
