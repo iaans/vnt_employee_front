@@ -42,15 +42,15 @@ function EmployeeForm({
     }
 
     if (updatingEmployee._id) {
-      console.log("aquia aqueiaiq", updatingEmployee);
       setState(updatingEmployee.state);
 
       fetchCities(updatingEmployee.state);
 
       setName(updatingEmployee.name);
-      const myDate = new Date(updatingEmployee.birthDate).toLocaleDateString();
-      console.log("my date ====>", myDate);
-      setDate(myDate);
+      // const myDate = new Date(updatingEmployee.birthDate).toLocaleDateString();
+      // console.log("my date ====>", myDate);
+      setDate(new Date(updatingEmployee.birthDate).toLocaleDateString());
+      console.log(updatingEmployee);
       setGender(updatingEmployee.gender);
       setJob(updatingEmployee.role);
       setSalary(updatingEmployee.salary);
@@ -84,18 +84,15 @@ function EmployeeForm({
   }
 
   // HANDLE CHANGE - init
-  function handleGenreChange(value) {
-    console.log(`selected ${value}`);
+  function handleGenderChange(value) {
     setGender(value);
   }
   async function handleStateChange(value) {
-    console.log(`selected ${value}`);
     setState(value);
     await getCities(value);
   }
 
   function handleCityChange(value) {
-    console.log(`selected ${value}`);
     setCity(value);
   }
 
@@ -122,7 +119,7 @@ function EmployeeForm({
 
             <select
               value={gender}
-              onChange={(e) => handleGenreChange(e.target.value)}
+              onChange={(e) => handleGenderChange(e.target.value)}
             >
               <option value="" disabled selected>
                 Select your gender

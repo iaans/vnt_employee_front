@@ -22,7 +22,6 @@ export function getUfs() {
 
 //FUNCTION FOR GETTING CITIES
 export function getCities(uf) {
-  console.log("CHEGOU AQUI!!!!!", uf);
   return (dispatch, getState) => {
     return api
       .get(`/get-cities-by-state/${uf}`)

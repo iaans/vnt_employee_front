@@ -8,7 +8,6 @@ const initialState = {
 };
 
 const locationReducer = (state = initialState, action = {}) => {
-  console.log("========>>>>>>> Action", action);
   switch (action.type) {
     case SET_UFS:
       return updateObject(state, { ufs: action.ufs });
