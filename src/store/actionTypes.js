@@ -11,3 +11,4 @@ export const SET_CITIES = "SET_CITIES";
 //feedbacks
 export const SET_SUCCESS = "SET_SUCESS";
 export const SET_ERRORS = "SET_ERRORS";
+export const SET_LOADING = "SET_LOADING";
