@@ -6,7 +6,7 @@ import {
   SET_CREATE_EMPLOYEE_SUCCESS,
 } from "../actionTypes";
 import { makeActionCreator } from "../../helpers/mix";
-import { setSuccess, setErrors } from "./feedback";
+import { setSuccess, setErrors, setLoading } from "./feedback";
 
 const setEmployees = makeActionCreator(SET_EMPLOYEES, "employees");
 export const setCreateUpdateEmployeeSuccess = makeActionCreator(
@@ -22,6 +22,7 @@ export const setUpdatingEmployee = makeActionCreator(
 
 export function listEmployees() {
   return (dispatch, getState) => {
+    dispatch(setLoading(true)); //estamos avisando que loading é true(mostre loading)
     return api
       .get("/list-employees")
       .then((res) => {
@@ -29,12 +30,16 @@ export function listEmployees() {
       })
       .catch((error) => {
         dispatch(setErrors(error.response?.data.errors));
+      })
+      .finally(() => {
+        dispatch(setLoading(false)); //estamos avisando que loading é false(unhide loading)
       });
   };
 }
 
 export function deleteEmployee(id) {
   return (dispatch, getState) => {
+    dispatch(setLoading(true));
     return api
       .delete(`/delete-employee/${id}`)
       .then((res) => {
@@ -43,6 +48,9 @@ export function deleteEmployee(id) {
       })
       .catch((error) => {
         dispatch(setErrors(error.response?.data.errors));
+      })
+      .finally(() => {
+        dispatch(setLoading(false)); //estamos avisando que loading é false(unhide loading)
       });
   };
 }
@@ -57,6 +65,7 @@ export function createEmployee({
   salary,
 }) {
   return (dispatch, getState) => {
+    dispatch(setLoading(true));
     return api
       .post("/submit-employee", {
         name,
@@ -73,6 +82,9 @@ export function createEmployee({
       })
       .catch((error) => {
         dispatch(setErrors(error.response?.data.errors));
+      })
+      .finally(() => {
+        dispatch(setLoading(false));
       });
   };
 }
@@ -88,6 +100,7 @@ export function updateEmployee({
   salary,
 }) {
   return (dispatch, getState) => {
+    dispatch(setLoading(true));
     return api
       .put("/put-employee", {
         _id,
@@ -104,6 +117,9 @@ export function updateEmployee({
       })
       .catch((error) => {
         dispatch(setErrors(error.response?.data.errors));
+      })
+      .finally(() => {
+        dispatch(setLoading(false));
       });
   };
 }
