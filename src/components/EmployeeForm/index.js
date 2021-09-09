@@ -1,104 +1,123 @@
 import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
 import "./style.css";
-import { Alert, Select } from "antd";
 import "antd/dist/antd.css";
-import api from "../../services/api";
 
-const { Option } = Select;
+import {
+  createEmployee,
+  updateEmployee,
+  setCreateUpdateEmployeeSuccess,
+} from "../../store/actions/employee.js";
+import { getCities, getUfs } from "../../store/actions/location.js";
 
-export default function EmployeeForm() {
+function EmployeeForm({
+  createEmployee,
+  getCities,
+  getUfs,
+  updateEmployee,
+  setCreateUpdateEmployeeSuccess,
+  cities,
+  ufs,
+  updatingEmployee,
+  success,
+}) {
   const [name, setName] = useState();
-  const [date, setDate] = useState();
-  const [genre, setGenre] = useState();
+  const [birthDate, setDate] = useState();
+  const [gender, setGender] = useState();
   const [state, setState] = useState();
   const [city, setCity] = useState();
-  const [job, setJob] = useState();
+  const [role, setJob] = useState();
   const [salary, setSalary] = useState();
-  const [ufs, setUfs] = useState([]);
-  const [cities, setCities] = useState([]);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState(false);
 
   useEffect(() => {
     getUfs();
   }, []);
 
   useEffect(() => {
-    setTimeout(() => {
-      setSuccess(false);
-    }, 6000);
-  }, [success]);
+    async function fetchCities(uf) {
+      // You can await here
+      await getCities(uf);
+    }
+
+    if (updatingEmployee._id) {
+      setState(updatingEmployee.state);
+
+      fetchCities(updatingEmployee.state);
+
+      setName(updatingEmployee.name);
+      setDate(updatingEmployee.birthDate);
+      console.log(updatingEmployee);
+      setGender(updatingEmployee.gender);
+      setJob(updatingEmployee.role);
+      setSalary(updatingEmployee.salary);
+      setCity(updatingEmployee.city);
+    }
+  }, [updatingEmployee]);
 
   useEffect(() => {
-    setTimeout(() => {
-      setError(false);
-    }, 6000);
-  }, [error]);
+    if (success) {
+      setName("");
+      setDate(null);
+      setGender("");
+      setState("");
+      setCity("");
+      setJob("");
+      setSalary(0);
 
-  async function getUfs() {
-    // fazer chamada para a rota de busca dos ufs
-    // com o resultado do back, preencha os ufs com setUfs
-
-    const response = await api.get("/list-ufs");
-    setUfs(response.data);
-
-    console.log(ufs);
-  }
-
-  async function getCities(uf) {
-    const response = await api.get(`get-cities-by-state/${uf}`);
-
-    setCities(response.data[0].cities);
-  }
+      setCreateUpdateEmployeeSuccess(false);
+    }
+  }, [success]);
 
   async function submitEmployee(e) {
     e.preventDefault();
-
-    setSuccess(false);
-    setError(false);
-
-    try {
-      await api.post("/submit-employee", {
+    if (updatingEmployee?._id) {
+      await updateEmployee({
+        _id: updatingEmployee._id,
         name,
-        birthDate: date,
-        gender: genre,
+        gender,
         state,
         city,
-        role: job,
+        role,
         salary,
       });
-
-      setSuccess(true);
-    } catch (error) {
-      console.log("Error => ", error);
-      setError(true);
+    } else {
+      await createEmployee({
+        name,
+        birthDate,
+        gender,
+        state,
+        city,
+        role,
+        salary,
+      });
     }
   }
 
   // HANDLE CHANGE - init
-  function handleGenreChange(value) {
-    console.log(`selected ${value}`);
-    setGenre(value);
+  function handleGenderChange(value) {
+    setGender(value);
   }
   async function handleStateChange(value) {
-    console.log(`selected ${value}`);
     setState(value);
     await getCities(value);
   }
 
   function handleCityChange(value) {
-    console.log(`selected ${value}`);
     setCity(value);
   }
 
   function handleDateChange(dateStringValue) {
-    console.log(`selected ${dateStringValue}`);
+    console.log(`selected DATE =>> ${dateStringValue}`);
     setDate(dateStringValue);
   }
   return (
     <div className="container">
       <header className="App-header">
-        <h1>Employee Registration</h1>
+        {updatingEmployee?._id ? (
+          <h1>Employee Update</h1>
+        ) : (
+          <h1>Employee Registration</h1>
+        )}
         <form>
           <input
             placeholder="Name"
@@ -106,15 +125,20 @@ export default function EmployeeForm() {
             onChange={(e) => setName(e.target.value)}
           />
           <div className="spaced-items">
-            <input
-              type="date"
-              style={{ marginRight: "4px" }}
-              onChange={(e) => handleDateChange(e.target.value)}
-            />
+            {!updatingEmployee?._id ? (
+              <input
+                type="date"
+                value={birthDate}
+                style={{ marginRight: "4px" }}
+                onChange={(e) => handleDateChange(e.target.value)}
+              />
+            ) : (
+              ""
+            )}
 
             <select
-              value={genre}
-              onChange={(e) => handleGenreChange(e.target.value)}
+              value={gender}
+              onChange={(e) => handleGenderChange(e.target.value)}
             >
               <option value="" disabled selected>
                 Select your gender
@@ -152,13 +176,16 @@ export default function EmployeeForm() {
           <div>
             <input
               placeholder="Role"
-              value={job}
+              value={role}
               onChange={(event) => setJob(event.target.value)}
             />
           </div>
           <div>
             <input
               placeholder="Salary"
+              type="number"
+              min="1"
+              max="1000000"
               value={salary}
               onChange={(event) => setSalary(event.target.value)}
             />
@@ -173,30 +200,39 @@ export default function EmployeeForm() {
             Send
           </button>
         </div>
-
-        {success ? (
-          <Alert
-            style={{ marginTop: "12px" }}
-            message="Success"
-            description="Registration success!"
-            type="success"
-            showIcon
-          />
-        ) : (
-          ""
-        )}
-        {error ? (
-          <Alert
-            style={{ marginTop: "12px" }}
-            message="Error"
-            description="An error occured on the registration, please try again!."
-            type="error"
-            showIcon
-          />
-        ) : (
-          ""
-        )}
       </header>
     </div>
   );
 }
+
+const mapStateToProperties = (state) => {
+  const { updatingEmployee } = state.employee;
+  const { cities, ufs } = state.location;
+  const { success } = state.feedback;
+
+  return { updatingEmployee, cities, ufs, success };
+};
+
+const mapDispatchToProperties = (dispatch) => ({
+  createEmployee: ({ name, birthDate, gender, state, city, role, salary }) =>
+    dispatch(
+      createEmployee({ name, birthDate, gender, state, city, role, salary })
+    ),
+  getCities: (uf) => {
+    dispatch(getCities(uf));
+  },
+  getUfs: () => {
+    dispatch(getUfs());
+  },
+  updateEmployee: ({ _id, name, gender, state, city, role, salary }) => {
+    dispatch(updateEmployee({ _id, name, gender, state, city, role, salary }));
+  },
+  setCreateUpdateEmployeeSuccess: (status) => {
+    setCreateUpdateEmployeeSuccess(status);
+  },
+});
+
+export default connect(
+  mapStateToProperties,
+  mapDispatchToProperties
+)(EmployeeForm);
