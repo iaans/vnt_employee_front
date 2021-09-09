@@ -1,21 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import "./style.css";
-
-import { Alert } from "antd";
 import "antd/dist/antd.css";
 
-import { createEmployee } from "../../store/actions/employee.js";
+import {
+  createEmployee,
+  updateEmployee,
+  setCreateUpdateEmployeeSuccess,
+} from "../../store/actions/employee.js";
 import { getCities, getUfs } from "../../store/actions/location.js";
 
 function EmployeeForm({
   createEmployee,
   getCities,
   getUfs,
-  success,
+  updateEmployee,
+  setCreateUpdateEmployeeSuccess,
   cities,
   ufs,
   updatingEmployee,
+  success,
 }) {
   const [name, setName] = useState();
   const [birthDate, setDate] = useState();
@@ -24,16 +28,10 @@ function EmployeeForm({
   const [city, setCity] = useState();
   const [role, setJob] = useState();
   const [salary, setSalary] = useState();
-  // const [success, setSuccess] = useState(false);
-  const [error, setError] = useState(false);
 
   useEffect(() => {
     getUfs();
   }, []);
-
-  // useEffect(() => {
-  //   updatingEmployee.uf && getCities(updatingEmployee.uf);
-  // }, [updatingEmployee.uf]);
 
   useEffect(() => {
     async function fetchCities(uf) {
@@ -47,9 +45,7 @@ function EmployeeForm({
       fetchCities(updatingEmployee.state);
 
       setName(updatingEmployee.name);
-      // const myDate = new Date(updatingEmployee.birthDate).toLocaleDateString();
-      // console.log("my date ====>", myDate);
-      setDate(new Date(updatingEmployee.birthDate).toLocaleDateString());
+      setDate(updatingEmployee.birthDate);
       console.log(updatingEmployee);
       setGender(updatingEmployee.gender);
       setJob(updatingEmployee.role);
@@ -58,29 +54,43 @@ function EmployeeForm({
     }
   }, [updatingEmployee]);
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     setSuccess(false);
-  //   }, 6000);
-  // }, [success]);
-
   useEffect(() => {
-    setTimeout(() => {
-      setError(false);
-    }, 6000);
-  }, [error]);
+    if (success) {
+      setName("");
+      setDate(null);
+      setGender("");
+      setState("");
+      setCity("");
+      setJob("");
+      setSalary(0);
+
+      setCreateUpdateEmployeeSuccess(false);
+    }
+  }, [success]);
 
   async function submitEmployee(e) {
     e.preventDefault();
-    await createEmployee({
-      name,
-      birthDate,
-      gender,
-      state,
-      city,
-      role,
-      salary,
-    });
+    if (updatingEmployee?._id) {
+      await updateEmployee({
+        _id: updatingEmployee._id,
+        name,
+        gender,
+        state,
+        city,
+        role,
+        salary,
+      });
+    } else {
+      await createEmployee({
+        name,
+        birthDate,
+        gender,
+        state,
+        city,
+        role,
+        salary,
+      });
+    }
   }
 
   // HANDLE CHANGE - init
@@ -103,7 +113,11 @@ function EmployeeForm({
   return (
     <div className="container">
       <header className="App-header">
-        <h1>Employee Registration</h1>
+        {updatingEmployee?._id ? (
+          <h1>Employee Update</h1>
+        ) : (
+          <h1>Employee Registration</h1>
+        )}
         <form>
           <input
             placeholder="Name"
@@ -111,11 +125,16 @@ function EmployeeForm({
             onChange={(e) => setName(e.target.value)}
           />
           <div className="spaced-items">
-            <input
-              type="date"
-              style={{ marginRight: "4px" }}
-              onChange={(e) => handleDateChange(e.target.value)}
-            />
+            {!updatingEmployee?._id ? (
+              <input
+                type="date"
+                value={birthDate}
+                style={{ marginRight: "4px" }}
+                onChange={(e) => handleDateChange(e.target.value)}
+              />
+            ) : (
+              ""
+            )}
 
             <select
               value={gender}
@@ -164,6 +183,9 @@ function EmployeeForm({
           <div>
             <input
               placeholder="Salary"
+              type="number"
+              min="1"
+              max="1000000"
               value={salary}
               onChange={(event) => setSalary(event.target.value)}
             />
@@ -178,38 +200,17 @@ function EmployeeForm({
             Send
           </button>
         </div>
-
-        {success ? (
-          <Alert
-            style={{ marginTop: "12px" }}
-            message="Success"
-            description="Registration success!"
-            type="success"
-            showIcon
-          />
-        ) : (
-          ""
-        )}
-        {error ? (
-          <Alert
-            style={{ marginTop: "12px" }}
-            message="Error"
-            description="An error occured on the registration, please try again!."
-            type="error"
-            showIcon
-          />
-        ) : (
-          ""
-        )}
       </header>
     </div>
   );
 }
 
 const mapStateToProperties = (state) => {
-  const { success, updatingEmployee } = state.employee;
+  const { updatingEmployee } = state.employee;
   const { cities, ufs } = state.location;
-  return { success, updatingEmployee, cities, ufs };
+  const { success } = state.feedback;
+
+  return { updatingEmployee, cities, ufs, success };
 };
 
 const mapDispatchToProperties = (dispatch) => ({
@@ -222,6 +223,12 @@ const mapDispatchToProperties = (dispatch) => ({
   },
   getUfs: () => {
     dispatch(getUfs());
+  },
+  updateEmployee: ({ _id, name, gender, state, city, role, salary }) => {
+    dispatch(updateEmployee({ _id, name, gender, state, city, role, salary }));
+  },
+  setCreateUpdateEmployeeSuccess: (status) => {
+    setCreateUpdateEmployeeSuccess(status);
   },
 });
 

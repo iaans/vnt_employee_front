@@ -3,6 +3,7 @@ import api from "../../services/api";
 
 import { SET_UFS, SET_CITIES } from "../actionTypes";
 import { makeActionCreator } from "../../helpers/mix";
+import { setErrors } from "./feedback";
 
 //MAKE ACTION CREATOR
 const setUfs = makeActionCreator(SET_UFS, "ufs");
@@ -16,7 +17,9 @@ export function getUfs() {
       .then((res) => {
         dispatch(setUfs(res.data));
       })
-      .catch(console.error);
+      .catch((error) => {
+        dispatch(setErrors(error.response?.data.errors));
+      });
   };
 }
 
@@ -28,6 +31,8 @@ export function getCities(uf) {
       .then((res) => {
         dispatch(setCities(res.data[0].cities));
       })
-      .catch(console.error);
+      .catch((error) => {
+        dispatch(setErrors(error.response?.data.errors));
+      });
   };
 }

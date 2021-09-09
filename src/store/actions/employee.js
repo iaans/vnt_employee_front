@@ -2,13 +2,17 @@ import api from "../../services/api";
 
 import {
   SET_EMPLOYEES,
-  SUBMIT_EMPLOYEE_SUCCESS,
   SET_UPDATING_EMPLOYEE,
+  SET_CREATE_EMPLOYEE_SUCCESS,
 } from "../actionTypes";
 import { makeActionCreator } from "../../helpers/mix";
+import { setSuccess, setErrors } from "./feedback";
 
 const setEmployees = makeActionCreator(SET_EMPLOYEES, "employees");
-const createEmployeeSuccsess = makeActionCreator(SUBMIT_EMPLOYEE_SUCCESS);
+export const setCreateUpdateEmployeeSuccess = makeActionCreator(
+  SET_CREATE_EMPLOYEE_SUCCESS,
+  "status"
+);
 export const setUpdatingEmployee = makeActionCreator(
   SET_UPDATING_EMPLOYEE,
   "updatingEmployee"
@@ -23,7 +27,9 @@ export function listEmployees() {
       .then((res) => {
         dispatch(setEmployees(res.data));
       })
-      .catch(console.error);
+      .catch((error) => {
+        dispatch(setErrors(error.response?.data.errors));
+      });
   };
 }
 
@@ -33,8 +39,11 @@ export function deleteEmployee(id) {
       .delete(`/delete-employee/${id}`)
       .then((res) => {
         dispatch(listEmployees());
+        dispatch(setSuccess("Employee successfully deleted"));
       })
-      .catch(console.error);
+      .catch((error) => {
+        dispatch(setErrors(error.response?.data.errors));
+      });
   };
 }
 
@@ -59,8 +68,42 @@ export function createEmployee({
         salary,
       })
       .then((res) => {
-        dispatch(createEmployeeSuccsess());
+        dispatch(setSuccess("The employee was successfully created"));
+        dispatch(setCreateUpdateEmployeeSuccess(true));
       })
-      .catch(console.error);
+      .catch((error) => {
+        dispatch(setErrors(error.response?.data.errors));
+      });
+  };
+}
+
+export function updateEmployee({
+  _id,
+  name,
+  birthDate,
+  gender,
+  state,
+  city,
+  role,
+  salary,
+}) {
+  return (dispatch, getState) => {
+    return api
+      .put("/put-employee", {
+        _id,
+        name,
+        birthDate,
+        gender,
+        state,
+        city,
+        role,
+        salary,
+      })
+      .then((res) => {
+        dispatch(setSuccess("The employee was successfully updated"));
+      })
+      .catch((error) => {
+        dispatch(setErrors(error.response?.data.errors));
+      });
   };
 }

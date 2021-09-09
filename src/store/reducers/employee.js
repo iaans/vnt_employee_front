@@ -1,9 +1,5 @@
 import { updateObject } from "../../helpers/mix";
-import {
-  SET_EMPLOYEES,
-  SUBMIT_EMPLOYEE_SUCCESS,
-  SET_UPDATING_EMPLOYEE,
-} from "../actionTypes";
+import { SET_EMPLOYEES, SET_UPDATING_EMPLOYEE } from "../actionTypes";
 
 const initialState = {
   employees: [],
@@ -17,7 +13,6 @@ const initialState = {
     role: "",
     salary: 0,
   },
-  success: false,
 };
 
 // reducers sao utilizados, para armazenar e gerenciar o estado da aplicacao
@@ -26,10 +21,7 @@ const employeeReducer = (state = initialState, action = {}) => {
   switch (action.type) {
     case SET_EMPLOYEES:
       return updateObject(state, { employees: action.employees });
-    case SUBMIT_EMPLOYEE_SUCCESS:
-      return updateObject(state, { success: true });
     case SET_UPDATING_EMPLOYEE:
-      console.log("SIDFKSDFJHSDFH", action.updatingEmployee);
       return updateObject(state, { updatingEmployee: action.updatingEmployee });
     default:
       return state;
