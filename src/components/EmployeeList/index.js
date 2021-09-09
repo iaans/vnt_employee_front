@@ -1,32 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
+import { useHistory } from "react-router-dom";
+import { connect } from "react-redux";
 
-import api from "../../services/api";
 import "antd/dist/antd.css";
 import { Table, Space } from "antd";
 
-export default function EmployeeList() {
-  const [employees, setEmployees] = useState([]);
+import api from "../../services/api";
+
+import {
+  deleteEmployee,
+  listEmployees,
+  setUpdatingEmployee,
+} from "../../store/actions/employee";
+
+function EmployeeList({
+  listEmployees,
+  employees,
+  deleteEmployee,
+  setUpdatingEmployee,
+}) {
+  // const [employees, setEmployees] = useState([]);
+
+  const history = useHistory();
 
   useEffect(() => {
-    getEmployees();
+    // getEmployees();
+    listEmployees();
   }, []);
-
-  async function getEmployees() {
-    const response = await api.get("/list-employees");
-    setEmployees(response.data);
-    console.log(employees);
-  }
-
-  function deleteEmployee(row) {
-    // const response = await api.delete(`/delete-employee/${row._id}`);
-
-    api
-      .delete(`/delete-employee/${row._id}`)
-      .then(async () => {
-        await getEmployees();
-      })
-      .catch((error) => console.log(error));
-  }
 
   const columns = [
     {
@@ -78,8 +78,15 @@ export default function EmployeeList() {
       key: "action",
       render: (row) => (
         <Space size="middle">
-          <a>Edit</a>
-          <a onClick={() => deleteEmployee(row)}>Delete</a>
+          <a
+            onClick={() => {
+              setUpdatingEmployee(row);
+              history.push("/");
+            }}
+          >
+            Edit
+          </a>
+          <a onClick={() => deleteEmployee(row._id)}>Delete</a>
         </Space>
       ),
     },
@@ -91,3 +98,41 @@ export default function EmployeeList() {
     </div>
   );
 }
+
+const mapStateToProperties = (state) => {
+  const { employees } = state.employee;
+
+  return { employees };
+};
+
+const mapDispatchToProperties = (dispatch) => ({
+  listEmployees: () => dispatch(listEmployees()),
+  setUpdatingEmployee: ({
+    _id,
+    name,
+    birthDate,
+    gender,
+    state,
+    city,
+    role,
+    salary,
+  }) =>
+    dispatch(
+      setUpdatingEmployee({
+        _id,
+        name,
+        birthDate,
+        gender,
+        state,
+        city,
+        role,
+        salary,
+      })
+    ),
+  deleteEmployee: (id) => dispatch(deleteEmployee(id)),
+});
+
+export default connect(
+  mapStateToProperties,
+  mapDispatchToProperties
+)(EmployeeList);
